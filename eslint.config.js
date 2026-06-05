@@ -1,22 +1,36 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import tseslint from "typescript-eslint";
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default tseslint.config(
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
+    ignores: [
+      ".next",
+      "dist",
+      "node_modules",
+      "public/uploads",
+      "src",
+      "legacy-src",
+      "vite.config.ts",
+      "tsconfig.app.json",
+      "tsconfig.node.json",
     ],
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    plugins: {
+      "react-hooks": reactHooks,
+    },
+    rules: {
+      ...reactHooks.configs.flat.recommended.rules,
+    },
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
   },
-])
+);

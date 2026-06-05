@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id          String   @id
+  nome        String
+  cpf         String
+  curso       String
+  instituicao String
+  validade    DateTime
+  fotoUrl     String
+  status      String
+  createdAt   DateTime @default(now())
+
+  @@map("cards")
+}
