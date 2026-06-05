@@ -1,16 +1,26 @@
-import Link from 'next/link'
-import { prisma } from '@/lib/prisma'
-import { PublicCard } from '@/components/cards/PublicCard'
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { PublicCard } from "@/components/cards/PublicCard";
+import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
+import { isDatabaseConfigured } from "@/lib/env";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 export default async function PublicCardPage({ params }: PageProps) {
-  const { id } = await params
-  const card = await prisma.card.findUnique({ where: { id } })
+  if (!isDatabaseConfigured()) {
+    return (
+      <main className="page-shell">
+        <DatabaseSetupNotice />
+      </main>
+    );
+  }
+
+  const { id } = await params;
+  const card = await prisma.card.findUnique({ where: { id } });
 
   return (
     <main className="page-shell">
@@ -20,7 +30,8 @@ export default async function PublicCardPage({ params }: PageProps) {
             <span className="kicker">Carteirinha pública</span>
             <h1 className="page-title">Validação da credencial</h1>
             <p className="page-subtitle">
-              Esta página pública exibe os dados oficiais da carteirinha encontrada no PostgreSQL.
+              Esta página pública exibe os dados oficiais da carteirinha
+              encontrada no PostgreSQL.
             </p>
 
             <div className="meta-grid" style={{ marginTop: 18 }}>
@@ -41,9 +52,13 @@ export default async function PublicCardPage({ params }: PageProps) {
         <section className="panel empty-state">
           <h1 className="empty-title">Carteirinha não encontrada</h1>
           <p className="helper-text">
-            O ID informado não existe no banco de dados ou a carteirinha foi removida.
+            O ID informado não existe no banco de dados ou a carteirinha foi
+            removida.
           </p>
-          <div className="actions-row" style={{ justifyContent: 'center', marginTop: 18 }}>
+          <div
+            className="actions-row"
+            style={{ justifyContent: "center", marginTop: 18 }}
+          >
             <Link href="/admin/login" className="btn-secondary">
               Voltar ao admin
             </Link>
@@ -51,5 +66,5 @@ export default async function PublicCardPage({ params }: PageProps) {
         </section>
       )}
     </main>
-  )
+  );
 }

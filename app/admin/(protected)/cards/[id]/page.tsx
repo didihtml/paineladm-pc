@@ -1,27 +1,33 @@
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
-import { CardForm } from '@/components/cards/CardForm'
-import { PublicCard } from '@/components/cards/PublicCard'
-import { DeleteCardButton } from '@/components/ui/DeleteCardButton'
-import { CopyLinkButton } from '@/components/ui/CopyLinkButton'
-import { prisma } from '@/lib/prisma'
-import { buildPublicCardUrl, formatDate, formatDateTime } from '@/lib/utils'
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { CardForm } from "@/components/cards/CardForm";
+import { PublicCard } from "@/components/cards/PublicCard";
+import { DeleteCardButton } from "@/components/ui/DeleteCardButton";
+import { CopyLinkButton } from "@/components/ui/CopyLinkButton";
+import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
+import { prisma } from "@/lib/prisma";
+import { isDatabaseConfigured } from "@/lib/env";
+import { buildPublicCardUrl, formatDate, formatDateTime } from "@/lib/utils";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 export default async function AdminCardDetailsPage({ params }: PageProps) {
-  const { id } = await params
-  const card = await prisma.card.findUnique({ where: { id } })
-
-  if (!card) {
-    notFound()
+  if (!isDatabaseConfigured()) {
+    return <DatabaseSetupNotice />;
   }
 
-  const publicUrl = buildPublicCardUrl(card.id)
+  const { id } = await params;
+  const card = await prisma.card.findUnique({ where: { id } });
+
+  if (!card) {
+    notFound();
+  }
+
+  const publicUrl = buildPublicCardUrl(card.id);
 
   return (
     <>
@@ -29,7 +35,10 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
         <div>
           <span className="kicker">Detalhes da carteirinha</span>
           <h1 className="page-title">{card.nome}</h1>
-          <p className="page-subtitle">Edite os dados, copie o link público e acompanhe as informações da credencial.</p>
+          <p className="page-subtitle">
+            Edite os dados, copie o link público e acompanhe as informações da
+            credencial.
+          </p>
         </div>
         <div className="actions-row">
           <Link href={publicUrl} target="_blank" className="btn-secondary">
@@ -40,7 +49,7 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
       </section>
 
       <section className="detail-grid">
-        <div style={{ display: 'grid', gap: 16 }}>
+        <div style={{ display: "grid", gap: 16 }}>
           <CardForm
             mode="edit"
             initialData={{
@@ -51,12 +60,12 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
               instituicao: card.instituicao,
               validade: card.validade,
               fotoUrl: card.fotoUrl,
-              status: card.status === 'ATIVA' ? 'ATIVA' : 'INATIVA',
+              status: card.status === "ATIVA" ? "ATIVA" : "INATIVA",
             }}
           />
         </div>
 
-        <div style={{ display: 'grid', gap: 16 }}>
+        <div style={{ display: "grid", gap: 16 }}>
           <div className="panel">
             <div className="meta-grid">
               <div className="meta-card">
@@ -89,5 +98,5 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
         </div>
       </section>
     </>
-  )
+  );
 }

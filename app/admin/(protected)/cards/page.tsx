@@ -2,12 +2,18 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDateTime } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { DeleteCardButton } from "@/components/ui/DeleteCardButton";
+import { isDatabaseConfigured } from "@/lib/env";
 import type { CardRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminCardsPage() {
+  if (!isDatabaseConfigured()) {
+    return <DatabaseSetupNotice />;
+  }
+
   const cards: CardRecord[] = await prisma.card.findMany({
     orderBy: { createdAt: "desc" },
   });

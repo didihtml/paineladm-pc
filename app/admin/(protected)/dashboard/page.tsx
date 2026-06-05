@@ -2,11 +2,17 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
+import { isDatabaseConfigured } from "@/lib/env";
 import type { CardRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
+  if (!isDatabaseConfigured()) {
+    return <DatabaseSetupNotice />;
+  }
+
   const [total, active, inactive, latestCards]: [
     number,
     number,
