@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { PublicCard } from "@/components/cards/PublicCard";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { isDatabaseConfigured } from "@/lib/env";
+import type { CardRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,9 @@ export default async function PublicCardPage({ params }: PageProps) {
   }
 
   const { id } = await params;
-  const card = await prisma.card.findUnique({ where: { id } });
+  const card = (await prisma.card.findUnique({
+    where: { id },
+  })) as CardRecord | null;
 
   return (
     <main className="page-shell">

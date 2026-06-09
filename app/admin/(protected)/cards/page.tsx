@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatDateTime } from "@/lib/utils";
+import { buildPublicCardUrl, formatDateTime } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { DeleteCardButton } from "@/components/ui/DeleteCardButton";
@@ -14,9 +14,9 @@ export default async function AdminCardsPage() {
     return <DatabaseSetupNotice />;
   }
 
-  const cards: CardRecord[] = await prisma.card.findMany({
+  const cards = (await prisma.card.findMany({
     orderBy: { createdAt: "desc" },
-  });
+  })) as CardRecord[];
 
   return (
     <>
@@ -65,7 +65,10 @@ export default async function AdminCardsPage() {
                     </td>
                     <td>
                       <strong>{card.nome}</strong>
-                      <div className="helper-text">{card.instituicao}</div>
+                      <div className="helper-text">
+                        Código {card.codigo ?? "não informado"} •{" "}
+                        {card.campus ?? "Sem campus"}
+                      </div>
                     </td>
                     <td>{card.curso}</td>
                     <td>
@@ -81,7 +84,7 @@ export default async function AdminCardsPage() {
                           Editar
                         </Link>
                         <Link
-                          href={`/card/${card.id}`}
+                          href={buildPublicCardUrl(card.id)}
                           className="btn-link"
                           target="_blank"
                         >

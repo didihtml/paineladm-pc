@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatDate } from "@/lib/utils";
+import { buildPublicCardUrl, formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { isDatabaseConfigured } from "@/lib/env";
@@ -13,12 +13,7 @@ export default async function AdminDashboardPage() {
     return <DatabaseSetupNotice />;
   }
 
-  const [total, active, inactive, latestCards]: [
-    number,
-    number,
-    number,
-    CardRecord[],
-  ] = await Promise.all([
+  const [total, active, inactive, latestCards] = await Promise.all([
     prisma.card.count(),
     prisma.card.count({ where: { status: "ATIVA" } }),
     prisma.card.count({ where: { status: "INATIVA" } }),
@@ -27,6 +22,8 @@ export default async function AdminDashboardPage() {
       take: 5,
     }),
   ]);
+
+  const typedLatestCards = latestCards as CardRecord[];
 
   return (
     <>
@@ -79,7 +76,7 @@ export default async function AdminDashboardPage() {
           </Link>
         </div>
 
-        {latestCards.length === 0 ? (
+        {typedLatestCards.length === 0 ? (
           <div className="empty-state">
             <h3 className="empty-title">Nenhuma carteirinha cadastrada</h3>
             <p className="helper-text">
@@ -100,7 +97,7 @@ export default async function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {latestCards.map((card) => (
+                {typedLatestCards.map((card) => (
                   <tr key={card.id}>
                     <td>
                       <div className="row-inline">
@@ -109,7 +106,10 @@ export default async function AdminDashboardPage() {
                         </div>
                         <div>
                           <strong>{card.nome}</strong>
-                          <div className="helper-text">{card.instituicao}</div>
+                          <div className="helper-text">
+                            Código {card.codigo ?? "não informado"} •{" "}
+                            {card.campus ?? "Sem campus"}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -127,7 +127,7 @@ export default async function AdminDashboardPage() {
                           Editar
                         </Link>
                         <Link
-                          href={`/card/${card.id}`}
+                          href={buildPublicCardUrl(card.id)}
                           className="btn-link"
                           target="_blank"
                         >

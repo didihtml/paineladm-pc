@@ -32,15 +32,51 @@ export function toDateInputValue(date: Date | string) {
   return `${year}-${month}-${day}`;
 }
 
-function buildAbsoluteUrl(path: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-  return baseUrl ? `${baseUrl}${path}` : path;
+function normalizeBaseUrl(baseUrl: string) {
+  return baseUrl.replace(/\/$/, "");
+}
+
+function buildAbsoluteUrl(path: string, baseUrl?: string) {
+  if (!baseUrl) {
+    return path;
+  }
+
+  return `${normalizeBaseUrl(baseUrl)}${path}`;
+}
+
+function getPortalBaseUrl() {
+  return process.env.NEXT_PUBLIC_PORTAL_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+}
+
+function resolvePortalPath(
+  template: string | undefined,
+  fallbackPath: string,
+  id?: string,
+) {
+  const path = template?.trim() || fallbackPath;
+
+  if (!id) {
+    return path;
+  }
+
+  return path.replaceAll("{id}", id).replaceAll(":id", id);
 }
 
 export function buildPublicCardUrl(id: string) {
-  return buildAbsoluteUrl(`/card/${id}`);
+  const path = resolvePortalPath(
+    process.env.NEXT_PUBLIC_PORTAL_CARD_PATH,
+    `/card/${id}`,
+    id,
+  );
+
+  return buildAbsoluteUrl(path, getPortalBaseUrl());
 }
 
 export function buildStudentLoginUrl() {
-  return buildAbsoluteUrl("/aluno/login");
+  const path = resolvePortalPath(
+    process.env.NEXT_PUBLIC_PORTAL_LOGIN_PATH,
+    "/aluno/login",
+  );
+
+  return buildAbsoluteUrl(path, getPortalBaseUrl());
 }

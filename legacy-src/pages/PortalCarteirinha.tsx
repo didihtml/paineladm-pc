@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ShieldCheck,
@@ -6,12 +7,45 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { CarteirinhaCard } from "@/components/carteirinha/CarteirinhaCard";
+import type { User } from "@/types/user";
 import { useUsersStore } from "@/store/usersStore";
+import { buildAssetUrl } from "@/utils/api";
 
 export function PortalCarteirinha() {
   const { codigoAcesso = "" } = useParams();
-  const getUserByAccessCode = useUsersStore((s) => s.getUserByAccessCode);
-  const user = getUserByAccessCode(codigoAcesso);
+  const fetchUserByAccessCode = useUsersStore((s) => s.fetchUserByAccessCode);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadUser() {
+      setIsLoading(true);
+      const result = await fetchUserByAccessCode(codigoAcesso);
+      if (!active) return;
+      setUser(result ?? null);
+      setIsLoading(false);
+    }
+
+    void loadUser();
+
+    return () => {
+      active = false;
+    };
+  }, [codigoAcesso, fetchUserByAccessCode]);
+
+  const photoSrc = normalizePhotoSrc(user?.foto ?? null);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 text-center shadow-2xl">
+          <p className="text-sm text-slate-300">Carregando carteirinha...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -61,12 +95,14 @@ export function PortalCarteirinha() {
             <InfoCard label="Código acadêmico" value={user.codigo} />
             <InfoCard label="Código de acesso" value={user.codigoAcesso} />
             <InfoCard label="Atribuição" value={user.atribuicao} />
-            <InfoCard label="Curso" value={user.curso} />
-            <InfoCard label="Campus" value={user.campus} />
+            <InfoCard label="RG" value={user.rg} />
+            <InfoCard label="CPF" value={user.cpf} />
             <InfoCard
               label="Nascimento"
               value={formatDate(user.dataNascimento)}
             />
+            <InfoCard label="Campus" value={user.campus} />
+            <InfoCard label="Curso" value={user.curso} />
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -77,15 +113,22 @@ export function PortalCarteirinha() {
               <ArrowLeft size={16} />
               Acessar painel
             </Link>
-            <a
-              href={user.foto ?? undefined}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
-            >
-              <ExternalLink size={16} />
-              {user.foto ? "Abrir foto" : "Foto indisponível"}
-            </a>
+            {photoSrc ? (
+              <a
+                href={photoSrc}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+              >
+                <ExternalLink size={16} />
+                Abrir foto
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-slate-400">
+                <ExternalLink size={16} />
+                Foto indisponível
+              </span>
+            )}
           </div>
         </div>
 
@@ -113,4 +156,29 @@ function formatDate(iso: string) {
 
   const [year, month, day] = iso.split("-");
   return `${day}/${month}/${year}`;
+}
+
+function normalizePhotoSrc(photo: string | null) {
+  if (!photo) return null;
+
+  const value = photo.trim();
+  if (!value) return null;
+
+  if (/^(data:|blob:|https?:|content:|file:)/i.test(value)) {
+    return value;
+  }
+
+  if (value.startsWith("/")) {
+    return buildAssetUrl(value);
+  }
+
+  const compactValue = value.replace(/\s+/g, "");
+  const looksLikeBase64 =
+    compactValue.length > 100 && /^[A-Za-z0-9+/=]+$/.test(compactValue);
+
+  if (looksLikeBase64) {
+    return `data:image/jpeg;base64,${compactValue}`;
+  }
+
+  return value;
 }

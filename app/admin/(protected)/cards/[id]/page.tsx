@@ -8,6 +8,7 @@ import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/env";
 import { buildPublicCardUrl, formatDate, formatDateTime } from "@/lib/utils";
+import type { CardRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,9 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
   }
 
   const { id } = await params;
-  const card = await prisma.card.findUnique({ where: { id } });
+  const card = (await prisma.card.findUnique({
+    where: { id },
+  })) as CardRecord | null;
 
   if (!card) {
     notFound();
@@ -55,12 +58,15 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
             initialData={{
               id: card.id,
               nome: card.nome,
+              codigo: card.codigo,
               cpf: card.cpf,
+              atribuicao: card.atribuicao,
+              rg: card.rg,
+              campus: card.campus,
+              nascimento: card.nascimento,
               curso: card.curso,
-              instituicao: card.instituicao,
-              validade: card.validade,
+              codigoAcesso: card.codigoAcesso,
               fotoUrl: card.fotoUrl,
-              status: card.status === "ATIVA" ? "ATIVA" : "INATIVA",
             }}
           />
         </div>
@@ -71,6 +77,38 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
               <div className="meta-card">
                 <p className="meta-label">ID</p>
                 <p className="meta-value">{card.id}</p>
+              </div>
+              <div className="meta-card">
+                <p className="meta-label">Código</p>
+                <p className="meta-value">{card.codigo ?? "Não informado"}</p>
+              </div>
+              <div className="meta-card">
+                <p className="meta-label">Atribuição</p>
+                <p className="meta-value">
+                  {card.atribuicao ?? "Não informado"}
+                </p>
+              </div>
+              <div className="meta-card">
+                <p className="meta-label">RG</p>
+                <p className="meta-value">{card.rg ?? "Não informado"}</p>
+              </div>
+              <div className="meta-card">
+                <p className="meta-label">Campus</p>
+                <p className="meta-value">{card.campus ?? "Não informado"}</p>
+              </div>
+              <div className="meta-card">
+                <p className="meta-label">Nascimento</p>
+                <p className="meta-value">
+                  {card.nascimento
+                    ? formatDate(card.nascimento)
+                    : "Não informado"}
+                </p>
+              </div>
+              <div className="meta-card">
+                <p className="meta-label">Código de acesso</p>
+                <p className="meta-value">
+                  {card.codigoAcesso ?? "Não informado"}
+                </p>
               </div>
               <div className="meta-card">
                 <p className="meta-label">Validade</p>

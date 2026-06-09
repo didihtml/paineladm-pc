@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { User, Eye, EyeOff, IdCard } from "lucide-react";
@@ -9,6 +9,8 @@ import LetterGlitch from "@/components/LetterGlitch";
 export function Login() {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
+  const checkSession = useAuthStore((s) => s.checkSession);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,16 +18,26 @@ export function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  useEffect(() => {
+    void checkSession();
+  }, [checkSession]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    setTimeout(() => {
-      const ok = login(email, password);
-      if (ok) navigate("/");
-      else setError("E-mail ou senha incorretos.");
-      setLoading(false);
-    }, 600);
+
+    const ok = await login(email, password);
+    if (ok) navigate("/");
+    else setError("E-mail ou senha incorretos.");
+
+    setLoading(false);
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useUsersStore } from "@/store/usersStore";
 import { CarteirinhaCard } from "@/components/carteirinha/CarteirinhaCard";
@@ -13,9 +13,15 @@ export function Carteirinha() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const users = useUsersStore((s) => s.users);
+  const isLoading = useUsersStore((s) => s.isLoading);
+  const fetchUsers = useUsersStore((s) => s.fetchUsers);
 
   const [selectedId, setSelectedId] = useState(searchParams.get("id") ?? "");
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    void fetchUsers();
+  }, [fetchUsers]);
 
   const selectedUser = users.find((u) => u.id === selectedId);
   const portalUrl = useMemo(
@@ -63,7 +69,13 @@ export function Carteirinha() {
         </select>
       </div>
 
-      {selectedUser ? (
+      {isLoading && !selectedUser ? (
+        <div className="rounded-2xl bg-white p-10 text-center text-sm text-slate-400 shadow-sm">
+          Carregando carteirinhas...
+        </div>
+      ) : null}
+
+      {!isLoading && selectedUser ? (
         <div className="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
             <div className="flex justify-center">
@@ -132,11 +144,13 @@ export function Carteirinha() {
             </div>
           </div>
         </div>
-      ) : (
+      ) : null}
+
+      {!isLoading && !selectedUser ? (
         <div className="rounded-2xl bg-white p-10 text-center text-sm text-slate-400 shadow-sm">
           Selecione um usuário para visualizar a carteirinha
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

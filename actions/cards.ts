@@ -29,16 +29,26 @@ interface CardActionData {
 function extractPayload(formData: FormData) {
   return {
     nome: String(formData.get("nome") ?? "").trim(),
+    codigo: String(formData.get("codigo") ?? "").trim(),
     cpf: String(formData.get("cpf") ?? "").trim(),
+    atribuicao: String(formData.get("atribuicao") ?? "").trim(),
+    rg: String(formData.get("rg") ?? "").trim(),
+    campus: String(formData.get("campus") ?? "").trim(),
+    nascimento: String(formData.get("nascimento") ?? "").trim(),
     curso: String(formData.get("curso") ?? "").trim(),
-    instituicao: String(formData.get("instituicao") ?? "").trim(),
-    validade: String(formData.get("validade") ?? "").trim(),
-    status: String(formData.get("status") ?? "").trim(),
+    codigoAcesso: String(formData.get("codigoAcesso") ?? "").trim(),
   };
 }
 
-function normalizeValidity(validade: string) {
-  return new Date(`${validade}T00:00:00`);
+function normalizeDate(value: string) {
+  return new Date(`${value}T00:00:00`);
+}
+
+function buildDefaultValidity() {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() + 1);
+  date.setHours(0, 0, 0, 0);
+  return date;
 }
 
 function revalidateCardPaths(id?: string) {
@@ -95,7 +105,7 @@ export async function createCardAction(
   }
 
   const id = crypto.randomUUID();
-  const studentUsername = generateStudentUsername(parsed.data.nome, id);
+  const studentUsername = parsed.data.cpf;
   const studentPassword = generateStudentPassword();
   const studentPasswordHash = hashStudentPassword(studentPassword);
   const upload = await saveCardImage(photo, id);
@@ -105,7 +115,10 @@ export async function createCardAction(
       data: {
         id,
         ...parsed.data,
-        validade: normalizeValidity(parsed.data.validade),
+        nascimento: normalizeDate(parsed.data.nascimento),
+        instituicao: parsed.data.campus,
+        validade: buildDefaultValidity(),
+        status: "ATIVA",
         fotoUrl: upload.publicUrl,
         origem: STUDENT_DEFAULT_ORIGIN,
         alunoUsuario: studentUsername,
@@ -194,7 +207,10 @@ export async function updateCardAction(
       where: { id },
       data: {
         ...parsed.data,
-        validade: normalizeValidity(parsed.data.validade),
+        nascimento: normalizeDate(parsed.data.nascimento),
+        instituicao: parsed.data.campus,
+        validade: existingCard.validade,
+        status: existingCard.status,
         fotoUrl,
       },
     });

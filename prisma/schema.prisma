@@ -8,18 +8,24 @@ datasource db {
 }
 
 model Card {
-  id             String   @id
+  id             String    @id
   nome           String
+  codigo         String?
   cpf            String
+  atribuicao     String?
+  rg             String?
+  campus         String?
+  nascimento     DateTime?
   curso          String
+  codigoAcesso   String?
   instituicao    String
   validade       DateTime
   fotoUrl        String
   status         String
-  origem         String   @default("SGA")
-  alunoUsuario   String   @unique
+  createdAt      DateTime  @default(now())
   alunoSenhaHash String
-  createdAt      DateTime @default(now())
+  alunoUsuario   String    @unique
+  origem         String    @default("SGA")
 
   @@map("cards")
 }

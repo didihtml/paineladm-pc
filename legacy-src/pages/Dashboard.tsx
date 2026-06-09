@@ -1,29 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsersStore } from "@/store/usersStore";
 import { UserForm } from "@/components/users/UserForm";
 import type { User, UserFormData } from "@/types/user";
 import { Plus, UserCircle } from "lucide-react";
+import { buildAssetUrl } from "@/utils/api";
 
 const LIMIT = 999;
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { users, addUser, updateUser, deleteUser } = useUsersStore();
+  const { users, isLoading, fetchUsers, addUser, updateUser, deleteUser } =
+    useUsersStore();
 
   const [modal, setModal] = useState<{ open: boolean; editing: User | null }>({
     open: false,
     editing: null,
   });
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  function handleSubmit(data: UserFormData) {
-    if (modal.editing) {
-      updateUser(modal.editing.id, data);
-    } else {
-      addUser(data);
+  useEffect(() => {
+    void fetchUsers();
+  }, [fetchUsers]);
+
+  async function handleSubmit(data: UserFormData) {
+    setIsSubmitting(true);
+
+    const ok = modal.editing
+      ? await updateUser(modal.editing.id, data)
+      : await addUser(data);
+
+    setIsSubmitting(false);
+
+    if (!ok) {
+      window.alert("Não foi possível salvar a carteirinha.");
+      return;
     }
+
     setModal({ open: false, editing: null });
+  }
+
+  async function handleDelete(id: string) {
+    setIsDeleting(true);
+    const ok = await deleteUser(id);
+    setIsDeleting(false);
+    setConfirmDelete(null);
+
+    if (!ok) {
+      window.alert("Não foi possível excluir a carteirinha.");
+    }
   }
 
   function formatDate(iso: string) {
@@ -42,7 +69,6 @@ export function Dashboard() {
         height: "100%",
       }}
     >
-      {/* Contador + botão criar */}
       <div
         style={{
           background: "#fff",
@@ -96,7 +122,6 @@ export function Dashboard() {
         </button>
       </div>
 
-      {/* Lista de usuários */}
       <div
         style={{
           flex: 1,
@@ -111,7 +136,22 @@ export function Dashboard() {
           border: "1px solid rgba(255,255,255,0.07)",
         }}
       >
-        {users.length === 0 && (
+        {isLoading && users.length === 0 ? (
+          <div
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              borderRadius: 12,
+              padding: "32px 16px",
+              textAlign: "center",
+              color: "rgba(255,255,255,0.5)",
+              fontSize: 13,
+            }}
+          >
+            Carregando carteirinhas...
+          </div>
+        ) : null}
+
+        {!isLoading && users.length === 0 ? (
           <div
             style={{
               background: "rgba(255,255,255,0.08)",
@@ -124,7 +164,7 @@ export function Dashboard() {
           >
             Nenhuma carteirinha criada ainda.
           </div>
-        )}
+        ) : null}
 
         {users.map((user) => (
           <div
@@ -137,7 +177,6 @@ export function Dashboard() {
               width: "100%",
             }}
           >
-            {/* Dados */}
             <div style={{ display: "flex", gap: 14, padding: "14px 16px" }}>
               <div
                 style={{
@@ -152,9 +191,9 @@ export function Dashboard() {
                   justifyContent: "center",
                 }}
               >
-                {user.foto ? (
+                {normalizePhotoSrc(user.foto) ? (
                   <img
-                    src={user.foto}
+                    src={normalizePhotoSrc(user.foto)!}
                     alt={user.nome}
                     style={{
                       width: "100%",
@@ -200,7 +239,7 @@ export function Dashboard() {
                 </p>
               </div>
             </div>
-            {/* Ações */}
+
             <div style={{ display: "flex", borderTop: "1px solid #f1f5f9" }}>
               {[
                 {
@@ -243,7 +282,6 @@ export function Dashboard() {
         ))}
       </div>
 
-      {/* Modal criar/editar */}
       {modal.open && (
         <div
           style={{
@@ -282,7 +320,7 @@ export function Dashboard() {
                 {modal.editing ? "Editar carteirinha" : "Nova carteirinha"}
               </h3>
             </div>
-            <div style={{ padding: 20 }}>
+            <div style={{ padding: 20, opacity: isSubmitting ? 0.7 : 1 }}>
               <UserForm
                 defaultValues={modal.editing ?? undefined}
                 onSubmit={handleSubmit}
@@ -293,7 +331,6 @@ export function Dashboard() {
         </div>
       )}
 
-      {/* Confirmar exclusão */}
       {confirmDelete && (
         <div
           style={{
@@ -347,10 +384,8 @@ export function Dashboard() {
                 Cancelar
               </button>
               <button
-                onClick={() => {
-                  deleteUser(confirmDelete);
-                  setConfirmDelete(null);
-                }}
+                onClick={() => void handleDelete(confirmDelete)}
+                disabled={isDeleting}
                 style={{
                   flex: 1,
                   padding: "10px 0",
@@ -361,9 +396,10 @@ export function Dashboard() {
                   background: "#ef4444",
                   border: "none",
                   color: "#fff",
+                  opacity: isDeleting ? 0.7 : 1,
                 }}
               >
-                Excluir
+                {isDeleting ? "Excluindo..." : "Excluir"}
               </button>
             </div>
           </div>
@@ -371,4 +407,11 @@ export function Dashboard() {
       )}
     </div>
   );
+}
+
+function normalizePhotoSrc(photo: string | null) {
+  if (!photo) return null;
+  if (/^(data:|blob:|https?:|content:|file:)/i.test(photo)) return photo;
+  if (photo.startsWith("/")) return buildAssetUrl(photo);
+  return photo;
 }
