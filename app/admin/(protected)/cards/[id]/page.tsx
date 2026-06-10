@@ -22,9 +22,49 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
   }
 
   const { id } = await params;
-  const card = (await prisma.card.findUnique({
-    where: { id },
-  })) as CardRecord | null;
+  let card: CardRecord | null = null;
+  let dbError: string | null = null;
+
+  try {
+    card = (await prisma.card.findUnique({
+      where: { id },
+    })) as CardRecord | null;
+  } catch (err: any) {
+    console.error("[AdminCardDetailsPage] Erro no Prisma:", err?.message || err);
+    dbError = err?.message || "Erro desconhecido ao acessar o banco de dados.";
+  }
+
+  if (dbError) {
+    return (
+      <section className="panel empty-state">
+        <h1 className="empty-title">Erro ao carregar dados</h1>
+        <p className="helper-text" style={{ maxWidth: 680, margin: "0 auto" }}>
+          Não foi possível conectar ao banco de dados. Verifique se a variável{" "}
+          <strong>DATABASE_URL</strong> está configurada corretamente na Vercel.
+        </p>
+        <p
+          className="helper-text"
+          style={{
+            maxWidth: 680,
+            margin: "12px auto 0",
+            fontFamily: "monospace",
+            fontSize: 12,
+            color: "#94a3b8",
+          }}
+        >
+          {dbError}
+        </p>
+        <div
+          className="actions-row"
+          style={{ justifyContent: "center", marginTop: 18 }}
+        >
+          <Link href="/admin/cards" className="btn-secondary">
+            Voltar para carteirinhas
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   if (!card) {
     notFound();

@@ -4,11 +4,19 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient
 }
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient(): PrismaClient {
+  const client = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   })
+
+  client.$connect().catch((err: any) => {
+    console.error('[Prisma] Erro ao conectar:', err?.message || err)
+  })
+
+  return client
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma

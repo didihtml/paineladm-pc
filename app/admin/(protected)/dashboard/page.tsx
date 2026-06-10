@@ -13,17 +13,64 @@ export default async function AdminDashboardPage() {
     return <DatabaseSetupNotice />;
   }
 
-  const [total, active, inactive, latestCards] = await Promise.all([
-    prisma.card.count(),
-    prisma.card.count({ where: { status: "ATIVA" } }),
-    prisma.card.count({ where: { status: "INATIVA" } }),
-    prisma.card.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    }),
-  ]);
+  let total = 0;
+  let active = 0;
+  let inactive = 0;
+  let latestCards: CardRecord[] = [];
+  let dbError: string | null = null;
+
+  try {
+    const [t, a, i, lc] = await Promise.all([
+      prisma.card.count(),
+      prisma.card.count({ where: { status: "ATIVA" } }),
+      prisma.card.count({ where: { status: "INATIVA" } }),
+      prisma.card.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+    ]);
+    total = t;
+    active = a;
+    inactive = i;
+    latestCards = lc as CardRecord[];
+  } catch (err: any) {
+    console.error("[AdminDashboardPage] Erro no Prisma:", err?.message || err);
+    dbError = err?.message || "Erro desconhecido ao acessar o banco de dados.";
+  }
 
   const typedLatestCards = latestCards as CardRecord[];
+
+  if (dbError) {
+    return (
+      <section className="panel empty-state">
+        <h1 className="empty-title">Erro ao carregar dados</h1>
+        <p className="helper-text" style={{ maxWidth: 680, margin: "0 auto" }}>
+          Não foi possível conectar ao banco de dados. Verifique se a variável{" "}
+          <strong>DATABASE_URL</strong> está configurada corretamente na Vercel.
+        </p>
+        <p
+          className="helper-text"
+          style={{
+            maxWidth: 680,
+            margin: "12px auto 0",
+            fontFamily: "monospace",
+            fontSize: 12,
+            color: "#94a3b8",
+          }}
+        >
+          {dbError}
+        </p>
+        <div
+          className="actions-row"
+          style={{ justifyContent: "center", marginTop: 18 }}
+        >
+          <Link href="/admin/dashboard" className="btn-secondary">
+            Tentar novamente
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
