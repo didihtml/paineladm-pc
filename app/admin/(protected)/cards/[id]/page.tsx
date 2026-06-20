@@ -7,7 +7,12 @@ import { CopyLinkButton } from "@/components/ui/CopyLinkButton";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/env";
-import { buildPublicCardUrl, formatDate, formatDateTime } from "@/lib/utils";
+import {
+  buildPublicCardUrl,
+  formatBirthDate,
+  formatDate,
+  formatDateTime,
+} from "@/lib/utils";
 import type { CardRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +35,10 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
       where: { id },
     })) as CardRecord | null;
   } catch (err: any) {
-    console.error("[AdminCardDetailsPage] Erro no Prisma:", err?.message || err);
+    console.error(
+      "[AdminCardDetailsPage] Erro no Prisma:",
+      err?.message || err,
+    );
     dbError = err?.message || "Erro desconhecido ao acessar o banco de dados.";
   }
 
@@ -140,7 +148,7 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
                 <p className="meta-label">Nascimento</p>
                 <p className="meta-value">
                   {card.nascimento
-                    ? formatDate(card.nascimento)
+                    ? formatBirthDate(card.nascimento)
                     : "Não informado"}
                 </p>
               </div>

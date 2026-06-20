@@ -1,6 +1,6 @@
 import { QRCodeSVG as QRCode } from "qrcode.react";
 import { KeyRound, UserRound } from "lucide-react";
-import { formatDate, buildPublicCardUrl } from "@/lib/utils";
+import { formatBirthDate, buildPublicCardUrl } from "@/lib/utils";
 import type { CardRecord } from "@/lib/types";
 
 interface PublicCardProps {
@@ -42,7 +42,9 @@ export function PublicCard({ card }: PublicCardProps) {
           <Field
             label="Nascimento"
             value={
-              card.nascimento ? formatDate(card.nascimento) : "Não informado"
+              card.nascimento
+                ? formatBirthDate(card.nascimento)
+                : "Não informado"
             }
           />
           <Field label="Campus" value={card.campus ?? "Não informado"} />

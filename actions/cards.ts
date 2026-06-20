@@ -41,7 +41,8 @@ function extractPayload(formData: FormData) {
 }
 
 function normalizeDate(value: string) {
-  return new Date(`${value}T00:00:00`);
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
 }
 
 function buildDefaultValidity() {

@@ -25,7 +25,8 @@ export const legacyCardPayloadSchema = z.object({
 export type LegacyCardPayload = z.infer<typeof legacyCardPayloadSchema>;
 
 function normalizeDate(value: string) {
-  return new Date(`${value}T00:00:00`);
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
 }
 
 function buildDefaultValidity() {
@@ -39,9 +40,9 @@ function toDateInputValue(date: Date | string | null) {
   if (!date) return "";
 
   const value = new Date(date);
-  const year = value.getFullYear();
-  const month = `${value.getMonth() + 1}`.padStart(2, "0");
-  const day = `${value.getDate()}`.padStart(2, "0");
+  const year = value.getUTCFullYear();
+  const month = `${value.getUTCMonth() + 1}`.padStart(2, "0");
+  const day = `${value.getUTCDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 

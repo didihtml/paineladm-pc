@@ -13,6 +13,15 @@ export function formatDate(date: Date | string) {
   }).format(new Date(date));
 }
 
+export function formatBirthDate(date: Date | string) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(date));
+}
+
 export function formatDateTime(date: Date | string) {
   return new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
@@ -25,9 +34,9 @@ export function formatDateTime(date: Date | string) {
 
 export function toDateInputValue(date: Date | string) {
   const value = new Date(date);
-  const year = value.getFullYear();
-  const month = `${value.getMonth() + 1}`.padStart(2, "0");
-  const day = `${value.getDate()}`.padStart(2, "0");
+  const year = value.getUTCFullYear();
+  const month = `${value.getUTCMonth() + 1}`.padStart(2, "0");
+  const day = `${value.getUTCDate()}`.padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
