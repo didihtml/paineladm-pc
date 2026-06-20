@@ -12,6 +12,7 @@ import {
   formatBirthDate,
   formatDate,
   formatDateTime,
+  toDateInputValue,
 } from "@/lib/utils";
 import type { CardRecord } from "@/lib/types";
 
@@ -111,7 +112,9 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
               atribuicao: card.atribuicao,
               rg: card.rg,
               campus: card.campus,
-              nascimento: card.nascimento,
+              nascimento: card.nascimento
+                ? toDateInputValue(card.nascimento)
+                : null,
               curso: card.curso,
               codigoAcesso: card.codigoAcesso,
               fotoUrl: card.fotoUrl,

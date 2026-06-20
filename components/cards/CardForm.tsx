@@ -34,6 +34,16 @@ interface CreateResultData {
   publicUrl: string;
 }
 
+function resolveDateInputValue(
+  value: Date | string | null | undefined,
+): string {
+  if (!value) return "";
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
+  return toDateInputValue(value);
+}
+
 export function CardForm({ mode, initialData }: CardFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -60,9 +70,7 @@ export function CardForm({ mode, initialData }: CardFormProps) {
       atribuicao: initialData?.atribuicao ?? "Aluno",
       rg: initialData?.rg ?? "",
       campus: initialData?.campus ?? "",
-      nascimento: initialData?.nascimento
-        ? toDateInputValue(initialData.nascimento)
-        : "",
+      nascimento: resolveDateInputValue(initialData?.nascimento),
       curso: initialData?.curso ?? "",
       codigoAcesso: initialData?.codigoAcesso ?? "",
     }),
