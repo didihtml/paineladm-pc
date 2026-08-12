@@ -100,8 +100,8 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
         </div>
       </section>
 
-      <section className="detail-grid">
-        <div style={{ display: "grid", gap: 16 }}>
+      <section className="detail-grid admin-card-details">
+        <div className="admin-card-editor">
           <CardForm
             mode="edit"
             initialData={{
@@ -122,10 +122,10 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
           />
         </div>
 
-        <div style={{ display: "grid", gap: 16 }}>
-          <div className="panel">
+        <div className="admin-card-summary">
+          <div className="panel card-data-panel">
             <div className="meta-grid">
-              <div className="meta-card">
+              <div className="meta-card meta-card-wide">
                 <p className="meta-label">ID</p>
                 <p className="meta-value">{card.id}</p>
               </div>
@@ -169,7 +169,7 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
                 <p className="meta-label">Criada em</p>
                 <p className="meta-value">{formatDateTime(card.createdAt)}</p>
               </div>
-              <div className="meta-card">
+              <div className="meta-card meta-card-wide meta-card-link">
                 <p className="meta-label">Link público</p>
                 <p className="meta-value">{publicUrl}</p>
               </div>
