@@ -49,7 +49,7 @@ export function NeuralAccessLogin() {
       <main className="mercury-auth-container">
         <header className="mercury-header">
           <span className="mercury-brand-id">Portal Admin · Acesso seguro</span>
-          <h1>NEURAL<br />ACCESS</h1>
+          <h1>ACESSO<br />PORTAL</h1>
           <p>Entre com seu usuário e senha para acessar o painel.</p>
         </header>
         <form action={formAction} autoComplete="on" className="mercury-form">
