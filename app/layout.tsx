@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ToastProvider } from '@/components/ui/ToastProvider'
+import { AppBackground } from '@/components/ui/AppBackground'
 
 export const metadata: Metadata = {
   title: 'Painel PUC | Carteirinhas',
@@ -11,7 +12,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="pt-BR">
       <body>
-        {children}
+        <AppBackground />
+        <div className="app-content">{children}</div>
         <ToastProvider />
       </body>
     </html>
