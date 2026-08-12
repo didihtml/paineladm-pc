@@ -1,10 +1,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AUTH_COOKIE_NAME } from "@/lib/constants";
+import {
+  createAdminSessionToken,
+  SESSION_DURATION_SECONDS,
+  verifyAdminSessionToken,
+} from "@/lib/admin-session";
 
 const DEFAULT_ADMIN_EMAIL = "admin@pucminas.br";
 const DEFAULT_ADMIN_PASSWORD = "admin123";
-const SESSION_VALUE = "authenticated";
 
 export function getAdminCredentials() {
   return {
@@ -15,7 +19,7 @@ export function getAdminCredentials() {
 
 export async function isAdminAuthenticated() {
   const cookieStore = await cookies();
-  return cookieStore.get(AUTH_COOKIE_NAME)?.value === SESSION_VALUE;
+  return verifyAdminSessionToken(cookieStore.get(AUTH_COOKIE_NAME)?.value);
 }
 
 export async function requireAdminSession() {
@@ -26,12 +30,12 @@ export async function requireAdminSession() {
 
 export async function createAdminSession() {
   const cookieStore = await cookies();
-  cookieStore.set(AUTH_COOKIE_NAME, SESSION_VALUE, {
+  cookieStore.set(AUTH_COOKIE_NAME, await createAdminSessionToken(), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: SESSION_DURATION_SECONDS,
   });
 }
 
