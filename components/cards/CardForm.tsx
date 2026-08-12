@@ -368,30 +368,6 @@ export function CardForm({ mode, initialData }: CardFormProps) {
         </div>
       </form>
 
-      {resultData ? (
-        <div className="result-box" style={{ marginTop: 22 }}>
-          <span className="kicker">Resultado</span>
-          <div>
-            <strong>ID gerado</strong>
-            <div className="result-value">{resultData.id}</div>
-          </div>
-          <div>
-            <strong>Link público</strong>
-            <div className="result-value">{resultData.publicUrl}</div>
-          </div>
-          <div className="actions-row">
-            <CopyLinkButton value={resultData.publicUrl} />
-            <Link
-              href={resultData.publicUrl}
-              target="_blank"
-              className="btn-secondary"
-            >
-              <ExternalLink size={16} />
-              Visualizar página pública
-            </Link>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
