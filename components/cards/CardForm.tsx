@@ -173,7 +173,7 @@ export function CardForm({ mode, initialData }: CardFormProps) {
   });
 
   return (
-    <div className="surface-card">
+    <div className={`surface-card card-form-card ${mode}`}>
       <div style={{ marginBottom: 22 }}>
         <h2 style={{ margin: 0, fontSize: "1.35rem" }}>
           {mode === "create" ? "Nova carteirinha" : "Editar carteirinha"}
@@ -195,7 +195,7 @@ export function CardForm({ mode, initialData }: CardFormProps) {
           </div>
 
           <div>
-            <strong style={{ color: "#0f172a" }}>Foto da carteirinha</strong>
+            <strong className="photo-title">Foto da carteirinha</strong>
             <p className="helper-text" style={{ marginTop: 8 }}>
               Envie uma imagem JPG, PNG ou WebP com até 5MB. A imagem ficará
               pública no portal da carteirinha.
@@ -220,6 +220,7 @@ export function CardForm({ mode, initialData }: CardFormProps) {
                 </button>
               )}
             </div>
+            <small className="photo-formats">Formatos aceitos: JPG, PNG, WebP • Máx. 5MB</small>
 
             <input
               ref={fileInputRef}
