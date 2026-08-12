@@ -5,7 +5,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { isDatabaseConfigured } from "@/lib/env";
 import type { CardRecord } from "@/lib/types";
-import { ArrowRight, CheckCircle2, Clock3, Plus, UserRound, XCircle } from "lucide-react";
+import { ArrowRight, CalendarDays, CheckCircle2, Clock3, Eye, MapPin, Pencil, Plus, UserRound, XCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -100,7 +100,7 @@ export default async function AdminDashboardPage() {
           <span className="kicker">Inativas</span><p className="stat-value">{inactive}</p><small>Carteirinhas inativas</small></div>
         </article>
         <article className="stat-card"><span className="stat-icon recent"><Clock3 /></span><div>
-          <span className="kicker">Últimas criadas</span><p className="stat-value">{latestCards.length}</p><small>Registros recentes</small></div>
+          <span className="kicker">Últimas criadas</span><p className="stat-value">{latestCards.length}</p><small>Nos últimos 7 dias</small></div>
         </article>
       </section>
 
@@ -150,10 +150,8 @@ export default async function AdminDashboardPage() {
                         </div>
                         <div>
                           <strong>{card.nome}</strong>
-                          <div className="helper-text">
-                            Código {card.codigo ?? "não informado"} •{" "}
-                            {card.campus ?? "Sem campus"}
-                          </div>
+                          <div className="helper-text">Código {card.codigo ?? "não informado"}</div>
+                          <div className="helper-text student-campus"><MapPin size={13} />{card.campus ?? "Sem campus"}</div>
                         </div>
                       </div>
                     </td>
@@ -161,21 +159,21 @@ export default async function AdminDashboardPage() {
                     <td>
                       <StatusBadge status={card.status} />
                     </td>
-                    <td>{formatDate(card.validade)}</td>
+                    <td><span className="validity-date"><CalendarDays size={15} />{formatDate(card.validade)}</span></td>
                     <td>
-                      <div className="actions-row">
+                      <div className="table-actions">
                         <Link
                           href={`/admin/cards/${card.id}`}
                           className="btn-link"
                         >
-                          Editar
+                          <Pencil size={15} /> Editar
                         </Link>
                         <Link
                           href={buildPublicCardUrl(card.id)}
                           className="btn-link"
                           target="_blank"
                         >
-                          Visualizar
+                          <Eye size={15} /> Visualizar
                         </Link>
                       </div>
                     </td>

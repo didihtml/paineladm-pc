@@ -7,6 +7,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <span className={`status-badge ${normalized === 'ATIVA' ? 'ativa' : 'inativa'}`}>
+      <span className="status-dot" />
       {normalized === 'ATIVA' ? 'Ativa' : 'Inativa'}
     </span>
   )
