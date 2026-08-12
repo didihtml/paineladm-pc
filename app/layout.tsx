@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import './admin-theme.css'
 import { ToastProvider } from '@/components/ui/ToastProvider'
 import { AppBackground } from '@/components/ui/AppBackground'
 

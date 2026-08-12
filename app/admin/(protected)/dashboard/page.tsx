@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { isDatabaseConfigured } from "@/lib/env";
 import type { CardRecord } from "@/lib/types";
+import { ArrowRight, CheckCircle2, Clock3, Plus, UserRound, XCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -84,26 +85,22 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
         <Link href="/admin/cards/new" className="btn">
-          Criar carteirinha
+          <Plus size={18} /> Criar carteirinha
         </Link>
       </section>
 
       <section className="grid-stats">
-        <article className="stat-card">
-          <span className="kicker">Total</span>
-          <p className="stat-value">{total}</p>
+        <article className="stat-card"><span className="stat-icon total"><UserRound /></span><div>
+          <span className="kicker">Total</span><p className="stat-value">{total}</p><small>Carteirinhas registradas</small></div>
         </article>
-        <article className="stat-card">
-          <span className="kicker">Ativas</span>
-          <p className="stat-value">{active}</p>
+        <article className="stat-card"><span className="stat-icon active"><CheckCircle2 /></span><div>
+          <span className="kicker">Ativas</span><p className="stat-value">{active}</p><small>Carteirinhas ativas</small></div>
         </article>
-        <article className="stat-card">
-          <span className="kicker">Inativas</span>
-          <p className="stat-value">{inactive}</p>
+        <article className="stat-card"><span className="stat-icon inactive"><XCircle /></span><div>
+          <span className="kicker">Inativas</span><p className="stat-value">{inactive}</p><small>Carteirinhas inativas</small></div>
         </article>
-        <article className="stat-card">
-          <span className="kicker">Últimas criadas</span>
-          <p className="stat-value">{latestCards.length}</p>
+        <article className="stat-card"><span className="stat-icon recent"><Clock3 /></span><div>
+          <span className="kicker">Últimas criadas</span><p className="stat-value">{latestCards.length}</p><small>Registros recentes</small></div>
         </article>
       </section>
 
@@ -119,7 +116,7 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
           <Link href="/admin/cards" className="btn-secondary">
-            Ver todas
+            Ver todas <ArrowRight size={17} />
           </Link>
         </div>
 
