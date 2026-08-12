@@ -1,55 +1,49 @@
-'use client'
+"use client";
 
-import { useActionState, useEffect } from 'react'
-import { LockKeyhole, Mail } from 'lucide-react'
-import { toast } from 'sonner'
-import { loginAction } from '@/actions/auth'
-import { SubmitButton } from '@/components/ui/SubmitButton'
-import type { ActionResult } from '@/lib/utils'
+import { useActionState, useEffect } from "react";
+import { LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
+import { toast } from "sonner";
+import { loginAction } from "@/actions/auth";
+import { SubmitButton } from "@/components/ui/SubmitButton";
+import type { ActionResult } from "@/lib/utils";
 
-const initialState: ActionResult = {
-  success: false,
-  message: '',
-}
+const initialState: ActionResult = { success: false, message: "" };
 
 export function LoginForm() {
-  const [state, formAction] = useActionState(loginAction, initialState)
+  const [state, formAction] = useActionState(loginAction, initialState);
 
   useEffect(() => {
-    if (state?.message && !state.success) {
-      toast.error(state.message)
-    }
-  }, [state])
+    if (state?.message && !state.success) toast.error(state.message);
+  }, [state]);
 
   return (
-    <form action={formAction} className="form-grid-single">
-      <div>
-        <span className="kicker">Acesso administrativo</span>
-        <h1 className="page-title" style={{ marginTop: 10 }}>
-          Entrar no painel
-        </h1>
-        <p className="page-subtitle">Use suas credenciais para cadastrar, editar e publicar carteirinhas.</p>
+    <form action={formAction} className="modern-login-form">
+      <div className="login-identity">
+        <div className="login-logo"><ShieldCheck size={25} strokeWidth={1.8} /></div>
+        <h1>Entrar no painel</h1>
+        <p>Acesse sua conta administrativa.</p>
       </div>
 
-      <div className="surface-card">
-        <div className="field" style={{ marginBottom: 14 }}>
-          <label htmlFor="email">E-mail</label>
-          <div className="row-inline">
-            <Mail size={16} color="#64748b" />
-            <input id="email" name="email" type="email" placeholder="admin@pucminas.br" required />
+      <div className="login-fields">
+        <label className="login-field" htmlFor="email">
+          <span>Usuário</span>
+          <div className="login-input-wrap">
+            <UserRound size={17} />
+            <input id="email" name="email" type="text" autoComplete="username" placeholder="Digite seu usuário" required autoFocus />
           </div>
-        </div>
+        </label>
 
-        <div className="field">
-          <label htmlFor="password">Senha</label>
-          <div className="row-inline">
-            <LockKeyhole size={16} color="#64748b" />
-            <input id="password" name="password" type="password" placeholder="••••••••" required />
+        <label className="login-field" htmlFor="password">
+          <span>Senha</span>
+          <div className="login-input-wrap">
+            <LockKeyhole size={17} />
+            <input id="password" name="password" type="password" autoComplete="current-password" placeholder="Digite sua senha" required />
           </div>
-        </div>
+        </label>
       </div>
 
-      <SubmitButton label="Entrar" pendingLabel="Entrando..." />
+      <div className="login-submit"><SubmitButton label="Entrar" pendingLabel="Entrando..." /></div>
+      <p className="login-security"><LockKeyhole size={12} /> Acesso restrito a administradores</p>
     </form>
-  )
+  );
 }
