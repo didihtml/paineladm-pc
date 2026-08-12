@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CardForm } from "@/components/cards/CardForm";
-import { PublicCard } from "@/components/cards/PublicCard";
+import { MobileCardPreview } from "@/components/cards/MobileCardPreview";
 import { DeleteCardButton } from "@/components/ui/DeleteCardButton";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { prisma } from "@/lib/prisma";
@@ -119,7 +119,7 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
         </div>
 
         <div className="admin-card-summary">
-          <PublicCard card={card} />
+          <MobileCardPreview card={card} />
         </div>
       </section>
     </>
