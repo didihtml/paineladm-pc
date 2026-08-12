@@ -3,15 +3,11 @@ import { notFound } from "next/navigation";
 import { CardForm } from "@/components/cards/CardForm";
 import { PublicCard } from "@/components/cards/PublicCard";
 import { DeleteCardButton } from "@/components/ui/DeleteCardButton";
-import { CopyLinkButton } from "@/components/ui/CopyLinkButton";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/env";
 import {
   buildPublicCardUrl,
-  formatBirthDate,
-  formatDate,
-  formatDateTime,
   toDateInputValue,
 } from "@/lib/utils";
 import type { CardRecord } from "@/lib/types";
@@ -123,66 +119,6 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
         </div>
 
         <div className="admin-card-summary">
-          <div className="panel card-data-panel">
-            <div className="meta-grid">
-              <div className="meta-card meta-card-wide">
-                <p className="meta-label">ID</p>
-                <p className="meta-value">{card.id}</p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Código</p>
-                <p className="meta-value">{card.codigo ?? "Não informado"}</p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Atribuição</p>
-                <p className="meta-value">
-                  {card.atribuicao ?? "Não informado"}
-                </p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">RG</p>
-                <p className="meta-value">{card.rg ?? "Não informado"}</p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Campus</p>
-                <p className="meta-value">{card.campus ?? "Não informado"}</p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Nascimento</p>
-                <p className="meta-value">
-                  {card.nascimento
-                    ? formatBirthDate(card.nascimento)
-                    : "Não informado"}
-                </p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Código de acesso</p>
-                <p className="meta-value">
-                  {card.codigoAcesso ?? "Não informado"}
-                </p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Validade</p>
-                <p className="meta-value">{formatDate(card.validade)}</p>
-              </div>
-              <div className="meta-card">
-                <p className="meta-label">Criada em</p>
-                <p className="meta-value">{formatDateTime(card.createdAt)}</p>
-              </div>
-              <div className="meta-card meta-card-wide meta-card-link">
-                <p className="meta-label">Link público</p>
-                <p className="meta-value">{publicUrl}</p>
-              </div>
-            </div>
-
-            <div className="actions-row" style={{ marginTop: 16 }}>
-              <CopyLinkButton value={publicUrl} />
-              <Link href={publicUrl} target="_blank" className="btn-secondary">
-                Abrir link público
-              </Link>
-            </div>
-          </div>
-
           <PublicCard card={card} />
         </div>
       </section>
