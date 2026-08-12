@@ -104,10 +104,8 @@
 @media(max-width:720px){.admin-card-details .meta-grid{grid-template-columns:1fr}.admin-card-details .card-data-panel>.actions-row{grid-template-columns:1fr}.admin-card-details .card-data-panel{padding:18px}}
 
 /* Phone-sized preview shown only inside the admin editor. */
-.mobile-card-preview{width:100%;max-width:420px;justify-self:center;overflow:hidden;border:1px solid #292929;border-radius:24px;background:#0c101a;color:#fff}
-.mobile-card-preview-header{height:84px;display:flex;align-items:center;justify-content:center;gap:28px;padding:0 26px;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;font-weight:800;background:#07597e}
-.mobile-card-preview-header span{margin-left:auto}.mobile-card-preview-header svg{margin-left:auto}
-.mobile-card-preview-screen{padding:12px 14px 14px;background:#0c101a}
+.mobile-card-preview{width:100%;max-width:390px;justify-self:center;color:#fff}
+.mobile-card-preview-screen{background:transparent}
 .mobile-card-preview .public-card{width:100%;max-width:none;border-radius:12px;box-shadow:none!important}
 .mobile-card-preview .public-card-topbar{height:0}
 .mobile-card-preview .public-card-body{gap:15px;padding:15px}
@@ -121,5 +119,4 @@
 .mobile-card-preview .public-card-access-body{grid-template-columns:118px minmax(0,1fr);gap:15px}
 .mobile-card-preview .public-card-qr{width:118px;height:118px;border-radius:9px}
 .mobile-card-preview .public-card-access-code strong{font-size:1rem}.mobile-card-preview .public-card-access-hint{display:none}
-.mobile-card-preview-dots{display:flex;justify-content:center;gap:7px;padding:12px 0 1px}.mobile-card-preview-dots i{width:8px;height:8px;border-radius:50%;background:#fff}.mobile-card-preview-dots i+ i{background:#6b7280}
-@media(max-width:480px){.mobile-card-preview{border-radius:18px}.mobile-card-preview-header{height:70px}.mobile-card-preview-screen{padding:10px}.mobile-card-preview .public-card-main{grid-template-columns:88px minmax(0,1fr)}.mobile-card-preview .public-card-photo{width:88px;height:108px}.mobile-card-preview .public-card-access-body{grid-template-columns:104px minmax(0,1fr)}.mobile-card-preview .public-card-qr{width:104px;height:104px}}
+@media(max-width:480px){.mobile-card-preview .public-card-main{grid-template-columns:88px minmax(0,1fr)}.mobile-card-preview .public-card-photo{width:88px;height:108px}.mobile-card-preview .public-card-access-body{grid-template-columns:104px minmax(0,1fr)}.mobile-card-preview .public-card-qr{width:104px;height:104px}}
