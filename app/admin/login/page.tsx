@@ -9,11 +9,5 @@ export default async function AdminLoginPage() {
     redirect('/admin/dashboard')
   }
 
-  return (
-    <main className="auth-shell">
-      <div className="auth-card">
-        <LoginForm />
-      </div>
-    </main>
-  )
+  return <LoginForm />
 }
