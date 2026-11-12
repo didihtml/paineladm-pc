@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CardForm } from "@/components/cards/CardForm";
+import { DisciplinesEditor } from "@/components/cards/DisciplinesEditor";
+import { StudentDataEditor } from "@/components/cards/StudentDataEditor";
 import { MobileCardPreview } from "@/components/cards/MobileCardPreview";
 import { DeleteCardButton } from "@/components/ui/DeleteCardButton";
 import { DatabaseSetupNotice } from "@/components/admin/DatabaseSetupNotice";
@@ -122,6 +124,8 @@ export default async function AdminCardDetailsPage({ params }: PageProps) {
           <MobileCardPreview card={card} />
         </div>
       </section>
+      <DisciplinesEditor cardId={card.id} />
+      <StudentDataEditor cardId={card.id} />
     </>
   );
 }
